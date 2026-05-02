@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – Viishhva Beauty</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    body { background: var(--cream); }
+
+    /* Sidebar */
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 240px; background: var(--brown-dark);
+      position: fixed; top: 0; left: 0; height: 100vh;
+      display: flex; flex-direction: column; z-index: 200;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(201,150,90,0.15);
+    }
+    .sidebar-logo a {
+      font-family: 'Italiana', serif;
+      font-size: 1.3rem; color: var(--cream);
+      text-decoration: none; display: block;
+    }
+    .sidebar-logo a span { color: var(--gold-light); }
+    .sidebar-logo .admin-badge {
+      display: inline-block; margin-top: 0.4rem;
+      background: var(--gold); color: white;
+      font-size: 0.6rem; padding: 0.15rem 0.6rem;
+      border-radius: 10px; letter-spacing: 0.1em;
+      text-transform: uppercase; font-family: 'Jost',sans-serif;
+    }
+
+    .sidebar-nav { padding: 1rem 0; flex: 1; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      color: rgba(245,237,227,0.6);
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-nav a .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .sidebar-nav a:hover { color: var(--cream); background: rgba(255,255,255,0.05); }
+    .sidebar-nav a.active {
+      color: var(--gold-light);
+      background: rgba(201,150,90,0.1);
+      border-left-color: var(--gold);
+    }
+    .sidebar-divider {
+      height: 1px; background: rgba(201,150,90,0.1);
+      margin: 0.75rem 1.5rem;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(201,150,90,0.1);
+    }
+    .sidebar-footer a {
+      display: flex; align-items: center; gap: 0.6rem;
+      color: rgba(245,237,227,0.4); font-size: 0.78rem;
+      text-decoration: none; transition: color 0.2s;
+    }
+    .sidebar-footer a:hover { color: var(--gold-light); }
+
+    /* Main content */
+    .main-content {
+      margin-left: 240px;
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--white);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid var(--cream-dark);
+      position: sticky; top: 0; z-index: 100;
+      gap: 1rem;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 1rem; }
+    .topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--brown-dark); }
+
+    .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-btn {
+      padding: 0.45rem 1rem; border-radius: 20px;
+      border: 1.5px solid var(--cream-dark); background: none;
+      font-family: 'Jost',sans-serif; font-size: 0.75rem;
+      color: var(--text-mid); cursor: pointer; transition: all 0.2s;
+    }
+    .topbar-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .topbar-btn.active-view { background: var(--brown-dark); color: var(--cream); border-color: var(--brown-dark); }
+
+    .menu-toggle-btn {
+      display: none; background: none; border: none;
+      font-size: 1.4rem; cursor: pointer; padding: 0.2rem;
+      color: var(--brown-dark);
+    }
+
+    .page-content { padding: 2rem; max-width: 1200px; }
+    .page-header { margin-bottom: 1.5rem; }
+    .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--brown-dark); }
+    .page-header p { color: var(--text-mid); font-size: 0.85rem; margin-top: 0.2rem; }
+
+    /* Live indicator */
+    .live-dot {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.72rem; color: #10b981;
+      background: rgba(16,185,129,0.1);
+      padding: 0.2rem 0.7rem; border-radius: 20px;
+    }
+    .live-dot::before {
+      content: ''; width: 6px; height: 6px;
+      background: #10b981; border-radius: 50%;
+      animation: livePulse 1.5s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    @media(max-width:900px){ .stats-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:500px){ .stats-grid { grid-template-columns: 1fr; } }
+
+    .stat-card-admin {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      border: 1.5px solid var(--cream-dark);
+      box-shadow: 0 2px 15px var(--shadow);
+      position: relative; overflow: hidden;
+      transition: all 0.3s;
+    }
+    .stat-card-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-md); }
+    .stat-card-admin .stat-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .stat-card-admin .icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .stat-card-admin .num {
+      font-family: 'Italiana', serif;
+      font-size: 2.4rem; color: var(--brown-dark);
+      line-height: 1; margin: 0.5rem 0 0.2rem;
+      display: block;
+    }
+    .stat-card-admin .lbl {
+      font-size: 0.72rem; color: var(--text-light);
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .stat-card-admin .trend {
+      font-size: 0.72rem; margin-top: 0.5rem;
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+    .trend-up { color: #10b981; }
+    .trend-down { color: #ef4444; }
+    .stat-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    /* Grid layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+    @media(max-width:900px){ .grid-2,.grid-3-1 { grid-template-columns: 1fr; } }
+
+    .admin-section {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      border: 1.5px solid var(--cream-dark);
+      box-shadow: 0 2px 15px var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+    .section-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .section-head h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; color: var(--brown-dark);
+    }
+    .section-head a, .section-head button {
+      font-size: 0.75rem; color: var(--gold);
+      font-family: 'Jost',sans-serif; font-weight: 400;
+      background: none; border: none; cursor: pointer;
+      text-decoration: none;
+    }
+    .section-head a:hover, .section-head button:hover { color: var(--brown-mid); }
+
+    /* Status filter tabs */
+    .status-tabs {
+      display: flex; gap: 0.5rem; margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .status-tab {
+      padding: 0.3rem 0.8rem; border-radius: 20px;
+      font-size: 0.72rem; font-family: 'Jost',sans-serif;
+      cursor: pointer; border: 1.5px solid var(--cream-dark);
+      background: none; color: var(--text-mid); transition: all 0.2s;
+    }
+    .status-tab.active { background: var(--brown-dark); color: var(--cream); border-color: var(--brown-dark); }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-light);
+      text-align: left; padding: 0.6rem 0.75rem;
+      border-bottom: 1.5px solid var(--cream-dark);
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.75rem; border-bottom: 1px solid var(--cream);
+      font-size: 0.85rem; vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--cream); }
+
+    .badge { display:inline-block; padding:0.2rem 0.65rem; border-radius:20px; font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; }
+    .badge-pending { background:#fef3c7; color:#92400e; }
+    .badge-confirmed { background:#d1fae5; color:#065f46; }
+    .badge-cancelled { background:#fee2e2; color:#991b1b; }
+    .badge-completed { background:#e0e7ff; color:#3730a3; }
+
+    .action-row { display:flex; gap:0.25rem; flex-wrap:nowrap; }
+    .act-btn { padding:0.25rem 0.55rem; border-radius:6px; border:none; font-size:0.68rem; cursor:pointer; font-family:'Jost',sans-serif; transition:all 0.2s; white-space:nowrap; }
+    .act-btn.confirm { background:#d1fae5; color:#065f46; }
+    .act-btn.confirm:hover { background:#059669; color:white; }
+    .act-btn.cancel { background:#fee2e2; color:#991b1b; }
+    .act-btn.cancel:hover { background:#dc2626; color:white; }
+    .act-btn.complete { background:#e0e7ff; color:#3730a3; }
+    .act-btn.complete:hover { background:#4f46e5; color:white; }
+    .act-btn.del { background:var(--cream-dark); color:var(--text-mid); }
+    .act-btn.del:hover { background:#fca5a5; color:#7f1d1d; }
+
+    /* Quick links */
+    .quick-links { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.5rem; }
+    @media(max-width:600px){ .quick-links { grid-template-columns:1fr; } }
+    .quick-link {
+      background:var(--white); border-radius:var(--radius); padding:1.1rem;
+      display:flex; align-items:center; gap:0.85rem;
+      box-shadow:0 2px 10px var(--shadow); text-decoration:none;
+      transition:all 0.3s; border:1.5px solid var(--cream-dark);
+    }
+    .quick-link:hover { border-color:var(--gold-pale); transform:translateY(-2px); box-shadow:0 8px 25px var(--shadow-md); }
+    .quick-link .ql-icon { width:42px; height:42px; background:var(--cream); border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+    .quick-link h4 { color:var(--brown-dark); font-size:0.85rem; margin-bottom:0.15rem; }
+    .quick-link p { color:var(--text-mid); font-size:0.72rem; }
+
+    /* Messages */
+    .messages-list { display:flex; flex-direction:column; gap:0.7rem; }
+    .message-item {
+      background:var(--cream); border-radius:10px; padding:0.9rem 1.1rem;
+      border-left:3px solid var(--gold);
+    }
+    .message-item .msg-header { display:flex; justify-content:space-between; margin-bottom:0.3rem; flex-wrap:wrap; gap:0.3rem; }
+    .message-item .msg-name { font-weight:600; color:var(--brown-dark); font-size:0.88rem; }
+    .message-item .msg-time { font-size:0.7rem; color:var(--text-light); }
+    .message-item .msg-text { color:var(--text-mid); font-size:0.82rem; line-height:1.6; }
+    .message-item .msg-contact { font-size:0.72rem; color:var(--gold); margin-top:0.3rem; }
+
+    /* Activity */
+    .activity-feed { display:flex; flex-direction:column; gap:0; }
+    .activity-item { display:flex; align-items:flex-start; gap:0.75rem; padding:0.65rem 0; border-bottom:1px solid var(--cream); }
+    .activity-item:last-child { border-bottom:none; }
+    .activity-dot { width:8px; height:8px; border-radius:50%; background:var(--gold); margin-top:5px; flex-shrink:0; }
+    .activity-dot.green { background:#10b981; }
+    .activity-dot.red { background:#ef4444; }
+    .activity-dot.blue { background:#3b82f6; }
+    .activity-text { font-size:0.8rem; color:var(--text-mid); line-height:1.5; flex:1; }
+    .activity-time { font-size:0.68rem; color:var(--text-light); margin-top:0.15rem; }
+
+    /* Chart */
+    .chart-container { position:relative; height:220px; }
+
+    /* Mobile sidebar overlay */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 150;
+      backdrop-filter: blur(2px);
+    }
+
+    @media(max-width:860px){
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay { display: block; }
+      .sidebar-overlay.hidden { display: none; }
+      .main-content { margin-left: 0; }
+      .menu-toggle-btn { display: block; }
+    }
+
+    /* Search bar */
+    .search-bar {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: var(--cream); border-radius: 20px;
+      padding: 0.4rem 1rem; border: 1.5px solid var(--cream-dark);
+      flex: 1; max-width: 300px;
+    }
+    .search-bar input {
+      border: none; background: none; outline: none;
+      font-family: 'Jost',sans-serif; font-size: 0.82rem;
+      color: var(--text-dark); width: 100%;
+    }
+
+    /* Photo mini grid */
+    .photo-mini { display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; }
+    .photo-mini-item {
+      aspect-ratio:1; border-radius:8px; overflow:hidden;
+      background:var(--cream-dark); cursor:pointer;
+    }
+    .photo-mini-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.3s; }
+    .photo-mini-item:hover img { transform:scale(1.05); }
+    .photo-mini-more {
+      aspect-ratio:1; border-radius:8px; background:var(--brown-dark);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--gold-light); font-family:'Italiana',serif;
+      font-size:1.1rem; cursor:pointer; text-decoration:none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay hidden" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <a href="/admin">Viishhva <span>Patel</span></a>
+    <span class="admin-badge">Admin Panel</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="/admin" class="active">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+    <a href="/admin/bookings">
+      <span class="nav-icon">📅</span> Bookings
+    </a>
+    <a href="/admin/messages">
+      <span class="nav-icon">💬</span> Messages
+    </a>
+    <div class="sidebar-divider"></div>
+    <a href="/photos">
+      <span class="nav-icon">🖼️</span> Photo Manager
+    </a>
+    <a href="/gallery" target="_blank">
+      <span class="nav-icon">✨</span> View Gallery
+    </a>
+    <div class="sidebar-divider"></div>
+    <a href="/" target="_blank">
+      <span class="nav-icon">🌐</span> View Website
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="/" target="_blank">← Back to Site</a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle-btn" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title">Dashboard</div>
+      <div class="live-dot">Live</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Search bookings..." oninput="filterBookings(this.value)" />
+      </div>
+      <a href="/photos" class="topbar-btn">+ Upload Photo</a>
+      <a href="/" target="_blank" class="topbar-btn">View Site ↗</a>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Welcome back! 🌸</h1>
+      <p id="dateDisplay"></p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card-admin">
+        <div class="stat-top">
+          <div><span class="num" id="totalBookings">–</span><div class="lbl">Total Bookings</div></div>
+          <div class="icon" style="background:#fef3c7;">📅</div>
+        </div>
+        <div class="trend trend-up" id="trendBookings">↑ Loading...</div>
+        <div class="stat-bar" style="background:linear-gradient(90deg,var(--gold),var(--gold-light));"></div>
+      </div>
+      <div class="stat-card-admin">
+        <div class="stat-top">
+          <div><span class="num" id="pendingBookings">–</span><div class="lbl">Pending</div></div>
+          <div class="icon" style="background:#fef3c7;">⏳</div>
+        </div>
+        <div class="trend" id="trendPending" style="color:var(--text-light);">Needs attention</div>
+        <div class="stat-bar" style="background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div>
+      </div>
+      <div class="stat-card-admin">
+        <div class="stat-top">
+          <div><span class="num" id="totalPhotos">–</span><div class="lbl">Gallery Photos</div></div>
+          <div class="icon" style="background:#d1fae5;">📷</div>
+        </div>
+        <div class="trend" style="color:var(--text-light);">In gallery</div>
+        <div class="stat-bar" style="background:linear-gradient(90deg,#10b981,#34d399);"></div>
+      </div>
+      <div class="stat-card-admin">
+        <div class="stat-top">
+          <div><span class="num" id="totalMessages">–</span><div class="lbl">Messages</div></div>
+          <div class="icon" style="background:#e0e7ff;">💬</div>
+        </div>
+        <div class="trend" style="color:var(--text-light);">From clients</div>
+        <div class="stat-bar" style="background:linear-gradient(90deg,#6366f1,#818cf8);"></div>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="quick-links">
+      <a href="/photos" class="quick-link">
+        <div class="ql-icon">🖼️</div>
+        <div><h4>Manage Photos</h4><p>Upload gallery images</p></div>
+      </a>
+      <a href="/#book" class="quick-link" target="_blank">
+        <div class="ql-icon">📅</div>
+        <div><h4>Booking Form</h4><p>View public booking page</p></div>
+      </a>
+      <a href="/gallery" class="quick-link" target="_blank">
+        <div class="ql-icon">✨</div>
+        <div><h4>View Gallery</h4><p>Public gallery page</p></div>
+      </a>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid-2" style="margin-bottom:1.5rem;">
+      <div class="admin-section" style="margin-bottom:0;">
+        <div class="section-head">
+          <h3>Bookings by Status</h3>
+        </div>
+        <div class="chart-container">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+      <div class="admin-section" style="margin-bottom:0;">
+        <div class="section-head">
+          <h3>Recent Activity</h3>
+          <button onclick="loadActivity()">Refresh</button>
+        </div>
+        <div class="activity-feed" id="activityFeed">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="admin-section">
+      <div class="section-head">
+        <h3>Recent Bookings</h3>
+        <button onclick="loadBookings()">↺ Refresh</button>
+      </div>
+
+      <div class="status-tabs">
+        <button class="status-tab active" data-filter="all" onclick="setFilter('all',this)">All</button>
+        <button class="status-tab" data-filter="pending" onclick="setFilter('pending',this)">Pending</button>
+        <button class="status-tab" data-filter="confirmed" onclick="setFilter('confirmed',this)">Confirmed</button>
+        <button class="status-tab" data-filter="completed" onclick="setFilter('completed',this)">Completed</button>
+        <button class="status-tab" data-filter="cancelled" onclick="setFilter('cancelled',this)">Cancelled</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Name</th><th>Service</th><th>Date</th><th>Time</th><th>Phone</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsTable">
+            <tr><td colspan="8" style="text-align:center;padding:2rem;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom Row: Messages + Photos -->
+    <div class="grid-3-1">
+      <div class="admin-section" style="margin-bottom:0;">
+        <div class="section-head">
+          <h3>Recent Messages</h3>
+          <button onclick="loadMessages()">↺ Refresh</button>
+        </div>
+        <div class="messages-list" id="messagesList">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <div class="admin-section" style="margin-bottom:0;">
+        <div class="section-head">
+          <h3>Gallery</h3>
+          <a href="/photos">Manage →</a>
+        </div>
+        <div class="photo-mini" id="photoMini">
+          <div class="loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</div><!-- /main-content -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── UTILS ──
+function escHtml(s) { if(!s)return''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(d) { if(!d)return'–'; return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+function fmtTime(d) { if(!d)return''; return new Date(d).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}); }
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(isError?' error':'');
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// Date display
+const now = new Date();
+document.getElementById('dateDisplay').textContent =
+  now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+// ── SIDEBAR ──
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('hidden');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.add('hidden');
+}
+
+// ── BOOKINGS ──
+let allBookings = [];
+let currentFilter = 'all';
+let searchQuery = '';
+
+async function loadBookings() {
+  try {
+    const res = await fetch('/api/bookings');
+    allBookings = await res.json();
+
+    // Update stats
+    document.getElementById('totalBookings').textContent = allBookings.length;
+    const pending = allBookings.filter(b => b.status === 'pending').length;
+    document.getElementById('pendingBookings').textContent = pending;
+    document.getElementById('trendPending').textContent = pending > 0 ? `⚠ ${pending} need action` : '✓ All handled';
+    document.getElementById('trendPending').className = 'trend ' + (pending > 0 ? 'trend-down' : 'trend-up');
+
+    const today = allBookings.filter(b => new Date(b.created_at).toDateString() === new Date().toDateString()).length;
+    document.getElementById('trendBookings').textContent = `↑ ${today} today`;
+
+    renderBookingsTable();
+    renderStatusChart();
+  } catch {
+    document.getElementById('bookingsTable').innerHTML =
+      '<tr><td colspan="8" style="text-align:center;color:var(--text-mid);padding:2rem;">Failed to load bookings.</td></tr>';
+  }
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderBookingsTable();
+}
+
+function filterBookings(q) {
+  searchQuery = q.toLowerCase();
+  renderBookingsTable();
+}
+
+function renderBookingsTable() {
+  const tbody = document.getElementById('bookingsTable');
+  let filtered = allBookings;
+
+  if (currentFilter !== 'all') filtered = filtered.filter(b => b.status === currentFilter);
+  if (searchQuery) filtered = filtered.filter(b =>
+    b.name.toLowerCase().includes(searchQuery) ||
+    b.service.toLowerCase().includes(searchQuery) ||
+    b.phone.includes(searchQuery)
+  );
+
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-mid);">No bookings found.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.slice(0, 25).map(b => `
+    <tr id="row-${b.id}">
+      <td style="color:var(--text-light);font-size:0.75rem;">#${b.id}</td>
+      <td><strong>${escHtml(b.name)}</strong><br/><span style="font-size:0.72rem;color:var(--text-light);">${escHtml(b.email||'')}</span></td>
+      <td>${escHtml(b.service)}</td>
+      <td style="white-space:nowrap;">${fmtDate(b.date)}</td>
+      <td style="white-space:nowrap;">${escHtml(b.time)}</td>
+      <td><a href="tel:${escHtml(b.phone)}" style="color:var(--gold);text-decoration:none;">${escHtml(b.phone)}</a></td>
+      <td><span class="badge badge-${b.status}">${b.status}</span></td>
+      <td>
+        <div class="action-row">
+          ${b.status !== 'confirmed' ? `<button class="act-btn confirm" onclick="updateBooking(${b.id},'confirmed')">✓</button>` : ''}
+          ${b.status !== 'completed' ? `<button class="act-btn complete" onclick="updateBooking(${b.id},'completed')">★</button>` : ''}
+          ${b.status !== 'cancelled' ? `<button class="act-btn cancel" onclick="updateBooking(${b.id},'cancelled')">✗</button>` : ''}
+          <button class="act-btn del" onclick="deleteBooking(${b.id})">🗑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function updateBooking(id, status) {
+  try {
+    const res = await fetch(`/api/bookings/${id}`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({status})
+    });
+    const r = await res.json();
+    if (r.success) {
+      showToast(`Booking ${status}! ✓`);
+      loadBookings();
+    } else {
+      showToast('Update failed', true);
+    }
+  } catch { showToast('Network error', true); }
+}
+
+async function deleteBooking(id) {
+  if (!confirm('Delete this booking permanently?')) return;
+  try {
+    await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
+    showToast('Booking deleted.');
+    loadBookings();
+  } catch { showToast('Failed to delete', true); }
+}
+
+// ── MESSAGES ──
+async function loadMessages() {
+  const list = document.getElementById('messagesList');
+  try {
+    const res = await fetch('/api/contact');
+    const msgs = await res.json();
+    document.getElementById('totalMessages').textContent = msgs.length;
+
+    if (!msgs.length) {
+      list.innerHTML = '<p style="text-align:center;color:var(--text-mid);padding:1.5rem;">No messages yet.</p>';
+      return;
+    }
+
+    list.innerHTML = msgs.slice(0, 8).map(m => `
+      <div class="message-item">
+        <div class="msg-header">
+          <span class="msg-name">${escHtml(m.name)}</span>
+          <span class="msg-time">${fmtDate(m.created_at)}</span>
+        </div>
+        <div class="msg-text">${escHtml(m.message)}</div>
+        <div class="msg-contact">
+          ${m.phone ? `📞 ${escHtml(m.phone)}` : ''}
+          ${m.email ? ` · ✉️ ${escHtml(m.email)}` : ''}
+        </div>
+      </div>
+    `).join('');
+  } catch {
+    list.innerHTML = '<p style="color:var(--text-mid);">Failed to load messages.</p>';
+  }
+}
+
+// ── PHOTO MINI ──
+async function loadPhotoMini() {
+  const container = document.getElementById('photoMini');
+  try {
+    const res = await fetch('/api/gallery');
+    const photos = await res.json();
+    document.getElementById('totalPhotos').textContent = photos.length;
+
+    if (!photos.length) {
+      container.innerHTML = `<a href="/photos" style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;background:var(--cream);border-radius:8px;padding:1.5rem;color:var(--text-mid);font-size:0.8rem;text-decoration:none;border:1.5px dashed var(--cream-mid);">+ Add photos</a>`;
+      return;
+    }
+
+    const show = photos.slice(0, 7);
+    container.innerHTML = show.map(p => `
+      <div class="photo-mini-item">
+        <img src="/api/gallery/${p.id}/image" alt="${escHtml(p.title)}" loading="lazy" />
+      </div>
+    `).join('') + (photos.length > 7 ? `<a href="/photos" class="photo-mini-more">+${photos.length - 7}</a>` : '');
+  } catch {
+    container.innerHTML = '<div style="grid-column:1/-1;color:var(--text-mid);font-size:0.8rem;text-align:center;padding:1rem;">Unable to load</div>';
+  }
+}
+
+// ── CHART ──
+let statusChart;
+function renderStatusChart() {
+  const ctx = document.getElementById('statusChart');
+  if (!ctx) return;
+
+  const counts = {
+    pending: allBookings.filter(b => b.status==='pending').length,
+    confirmed: allBookings.filter(b => b.status==='confirmed').length,
+    completed: allBookings.filter(b => b.status==='completed').length,
+    cancelled: allBookings.filter(b => b.status==='cancelled').length,
+  };
+
+  if (statusChart) statusChart.destroy();
+
+  statusChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
+      datasets: [{
+        data: [counts.pending, counts.confirmed, counts.completed, counts.cancelled],
+        backgroundColor: ['#f59e0b','#10b981','#6366f1','#ef4444'],
+        borderWidth: 0,
+        borderRadius: 4,
+        spacing: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 16,
+            font: { family: "'Jost', sans-serif", size: 11 },
+            color: '#6b4a36',
+            boxWidth: 10,
+            boxHeight: 10,
+            borderRadius: 3,
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` ${ctx.label}: ${ctx.raw} bookings`
+          }
+        }
+      }
+    }
+  });
+}
+
+// ── ACTIVITY FEED ──
+async function loadActivity() {
+  const feed = document.getElementById('activityFeed');
+  try {
+    const [bRes, mRes] = await Promise.all([
+      fetch('/api/bookings'),
+      fetch('/api/contact')
+    ]);
+    const bookings = await bRes.json();
+    const messages = await mRes.json();
+
+    const activities = [
+      ...bookings.slice(0, 5).map(b => ({
+        type: b.status === 'cancelled' ? 'red' : b.status === 'confirmed' ? 'green' : 'gold',
+        text: `<strong>${escHtml(b.name)}</strong> booked <em>${escHtml(b.service)}</em>`,
+        time: b.created_at,
+        icon: '📅'
+      })),
+      ...messages.slice(0, 3).map(m => ({
+        type: 'blue',
+        text: `<strong>${escHtml(m.name)}</strong> sent a message`,
+        time: m.created_at,
+        icon: '💬'
+      }))
+    ].sort((a,b) => new Date(b.time) - new Date(a.time)).slice(0, 8);
+
+    if (!activities.length) {
+      feed.innerHTML = '<p style="color:var(--text-mid);font-size:0.82rem;padding:1rem 0;">No activity yet.</p>';
+      return;
+    }
+
+    feed.innerHTML = activities.map(a => `
+      <div class="activity-item">
+        <div class="activity-dot ${a.type}"></div>
+        <div>
+          <div class="activity-text">${a.text}</div>
+          <div class="activity-time">${fmtDate(a.time)} · ${fmtTime(a.time)}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch {
+    feed.innerHTML = '<p style="color:var(--text-mid);font-size:0.82rem;padding:1rem 0;">Failed to load.</p>';
+  }
+}
+
+// ── INIT ──
+loadBookings();
+loadMessages();
+loadPhotoMini();
+loadActivity();
+
+// Auto-refresh every 60s
+setInterval(() => {
+  loadBookings();
+  loadMessages();
+  loadActivity();
+}, 60000);
+</script>
+</body>
+</html>
