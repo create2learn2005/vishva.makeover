@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viishhva Patel – Makeover & Beauty Studio, Juni Vasni</title>
+  <meta name="description" content="Expert beauty services – Eyebrow Shaping, Facial, Hair Spa, Makeup & more. Book your appointment at Viishhva Patel Beauty Studio, Juni Vasni, Gujarat." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── HERO EXTRAS ── */
+    .hero-leaf {
+      position: absolute;
+      right: 8%;
+      top: 20%;
+      font-size: 8rem;
+      opacity: 0.06;
+      transform: rotate(25deg);
+      pointer-events: none;
+      animation: leafSway 6s ease-in-out infinite;
+    }
+    @keyframes leafSway {
+      0%,100%{transform:rotate(25deg)scale(1);}
+      50%{transform:rotate(30deg)scale(1.05);}
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-section {
+      background: linear-gradient(90deg, var(--gold), var(--brown-mid), var(--gold));
+      background-size: 200% 100%;
+      animation: gradientShift 4s linear infinite;
+    }
+    @keyframes gradientShift {
+      0%{background-position:0% 50%}
+      100%{background-position:200% 50%}
+    }
+
+    /* ── GLOW CARDS for services ── */
+    .service-card.special {
+      background: linear-gradient(135deg, var(--brown-dark), var(--brown));
+      border-color: var(--brown-mid);
+    }
+    .service-card.special h3 { color: var(--cream); }
+    .service-card.special p { color: rgba(245,237,227,0.7); }
+
+    /* ── PROCESS SECTION ── */
+    .process-section {
+      padding: 5rem 5%;
+      background: linear-gradient(135deg, var(--brown-dark) 0%, #2a0e05 100%);
+      text-align: center;
+    }
+    .process-section .section-tag { color: var(--gold-light); }
+    .process-section .section-title { color: var(--cream); margin-bottom: 3rem; }
+
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .process-steps::before {
+      content: '';
+      position: absolute;
+      top: 30px;
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    @media(max-width:700px){.process-steps{grid-template-columns:1fr 1fr}.process-steps::before{display:none}}
+    @media(max-width:450px){.process-steps{grid-template-columns:1fr}}
+
+    .process-step { padding: 1.5rem 1rem; }
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--brown-mid));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Italiana', serif;
+      font-size: 1.4rem;
+      color: white;
+      margin: 0 auto 1rem;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 4px 20px rgba(201,150,90,0.4);
+    }
+    .process-step h4 { color: var(--gold-light); font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .process-step p { color: rgba(245,237,227,0.55); font-size: 0.8rem; line-height: 1.6; }
+
+    /* ── INSTAGRAM STRIP ── */
+    .insta-section {
+      padding: 4rem 5%;
+      background: var(--cream);
+      text-align: center;
+    }
+    .insta-handle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      color: var(--brown-dark);
+      text-decoration: none;
+      padding: 0.8rem 2rem;
+      border-radius: 40px;
+      border: 1.5px solid var(--cream-dark);
+      transition: all var(--transition);
+      margin-top: 1.5rem;
+    }
+    .insta-handle:hover {
+      background: var(--brown-dark);
+      color: var(--gold-light);
+      border-color: var(--brown-dark);
+      transform: scale(1.03);
+    }
+
+    /* ── REVIEW MODAL STARS ── */
+    .stars-input { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .star-btn {
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--cream-dark);
+      transition: color 0.2s, transform 0.2s;
+      background: none;
+      border: none;
+    }
+    .star-btn.active { color: var(--gold); }
+    .star-btn:hover { color: var(--gold); transform: scale(1.2); }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="/" class="nav-logo">Viishhva <span>Patel</span></a>
+  <ul class="nav-links">
+    <li><a href="#services" data-i18n="nav_services">Services</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#about" data-i18n="nav_about">About</a></li>
+    <li><a href="#reviews" data-i18n="nav_reviews">Reviews</a></li>
+    <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
+  </ul>
+  <a href="#book" class="nav-cta" data-i18n="nav_book">Book Now</a>
+  <button class="lang-toggle" id="langToggle">GUJ</button>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-leaf">🌿</div>
+  <div class="hero-petals" id="heroPetals"></div>
+
+  <div class="hero-content">
+    <span class="hero-tag" data-i18n="hero_tag">✦ Beauty Studio · Juni Vasni</span>
+    <h1>
+      Viishhva
+      <em data-i18n="hero_em">Patel</em>
+    </h1>
+    <p data-i18n="hero_p">We combine medical expertise and modern aesthetics to deliver safe, effective, and trusted beauty solutions for every need.</p>
+    <div class="hero-btns">
+      <a href="#book" class="btn-primary" data-i18n="hero_btn_book">Book Appointment</a>
+      <a href="/gallery" class="btn-outline" data-i18n="hero_btn_gallery">View Gallery</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-card">
+      <span class="num" id="statClients">500+</span>
+      <span class="lbl" data-i18n="stat_clients">Happy Clients</span>
+    </div>
+    <div class="stat-card">
+      <span class="num">5+</span>
+      <span class="lbl" data-i18n="stat_experience">Years Experience</span>
+    </div>
+    <div class="stat-card">
+      <span class="num">100%</span>
+      <span class="lbl" data-i18n="stat_satisfaction">Satisfaction</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <span data-i18n="hero_scroll">Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>✦ Eyebrow Shaping</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Wax & Smooth</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Clean-Up & Facial</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Hair Spa & Cut</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Hair Style & Makeup</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Bridal Packages</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>✦ Eyebrow Shaping</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Wax & Smooth</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Clean-Up & Facial</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Hair Spa & Cut</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Hair Style & Makeup</span></div>
+    <div class="marquee-item"><span class="dot">●</span><span>Bridal Packages</span></div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-header fade-up">
+    <span class="section-tag" data-i18n="section_services_tag">✦ What We Offer</span>
+    <h2 class="section-title" data-i18n="section_services_title">Our <em>Services</em></h2>
+    <p class="section-sub" data-i18n="section_services_sub">Expert beauty treatments tailored to bring out your natural radiance</p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card fade-up">
+      <span class="service-icon">🌙</span>
+      <h3 data-i18n="service_1_title">Eyebrow Shaping</h3>
+      <p data-i18n="service_1_p">Perfect arch and definition for your brows with threading, waxing, or tinting techniques.</p>
+      <div class="service-price">Starting ₹100</div>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-icon">🌸</span>
+      <h3 data-i18n="service_2_title">Wax & Smooth</h3>
+      <p data-i18n="service_2_p">Full body or area-specific waxing for silky smooth skin that lasts for weeks.</p>
+      <div class="service-price">Starting ₹150</div>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-icon">✨</span>
+      <h3 data-i18n="service_3_title">Clean-Up & Facial</h3>
+      <p data-i18n="service_3_p">Deep cleansing, exfoliation, and nourishing facial treatments for glowing skin.</p>
+      <div class="service-price">Starting ₹300</div>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-icon">💆</span>
+      <h3 data-i18n="service_4_title">Hair Spa & Cut</h3>
+      <p data-i18n="service_4_p">Revitalize your hair with deep conditioning spa treatments, precision cuts, and colour.</p>
+      <div class="service-price">Starting ₹400</div>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-icon">💄</span>
+      <h3 data-i18n="service_5_title">Hair Style & Makeup</h3>
+      <p data-i18n="service_5_p">Professional makeup and hairstyling for every occasion – from bridal to everyday glam.</p>
+      <div class="service-price">Starting ₹500</div>
+    </div>
+    <div class="service-card fade-up special">
+      <span class="service-icon">📞</span>
+      <h3 data-i18n="service_6_title">Custom Package</h3>
+      <p data-i18n="service_6_p">Looking for a combo deal? Contact us and we'll create the perfect package for you.</p>
+      <a href="tel:6355781262" class="btn-primary" style="margin-top:1rem;font-size:0.78rem;" data-i18n="service_6_btn">Call Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process-section">
+  <span class="section-tag">✦ How It Works</span>
+  <h2 class="section-title">Simple <em>Steps</em></h2>
+
+  <div class="process-steps">
+    <div class="process-step fade-up">
+      <div class="step-num">1</div>
+      <h4>Book Online</h4>
+      <p>Fill our quick booking form or call us directly</p>
+    </div>
+    <div class="process-step fade-up">
+      <div class="step-num">2</div>
+      <h4>Confirmation</h4>
+      <p>We confirm your appointment via phone call</p>
+    </div>
+    <div class="process-step fade-up">
+      <div class="step-num">3</div>
+      <h4>Visit Us</h4>
+      <p>Come to our studio in Juni Vasni, Gujarat</p>
+    </div>
+    <div class="process-step fade-up">
+      <div class="step-num">4</div>
+      <h4>Glow Up ✨</h4>
+      <p>Experience your transformation and leave radiant</p>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY PREVIEW -->
+<section class="gallery-section" id="gallery">
+  <div class="gallery-header fade-up">
+    <div>
+      <span class="section-tag">✦ Our Work</span>
+      <h2 class="section-title">Makeover <em>Gallery</em></h2>
+      <p class="section-sub">Real transformations, real confidence.</p>
+    </div>
+    <a href="/gallery" class="btn-outline" style="white-space:nowrap;">View All →</a>
+  </div>
+
+  <div class="gallery-grid" id="galleryPreview">
+    <div class="gallery-placeholder" style="grid-column:1/-1;">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <div class="about-visual fade-up">
+      <div class="about-img-wrap">💄</div>
+      <div class="about-badge">
+        <span class="big-num">5+</span>
+        <span class="small-txt" data-i18n="about_badge">Years of Expertise</span>
+      </div>
+    </div>
+
+    <div class="fade-up">
+      <span class="section-tag" data-i18n="about_tag">✦ About Us</span>
+      <h2 class="section-title" data-i18n="about_title">The Art of <em>Beauty</em></h2>
+      <p class="section-sub" data-i18n="about_p" style="max-width:100%;margin-bottom:2rem;">
+        Viishhva Patel is a dedicated beauty expert combining medical-grade knowledge with modern aesthetics. Every treatment is personalised to enhance your natural beauty safely and effectively.
+      </p>
+
+      <div class="about-features">
+        <div class="about-feat">
+          <div class="af-icon">🏥</div>
+          <h4 data-i18n="about_feat_1">Medical Expertise</h4>
+          <p data-i18n="about_feat_1_p">Safe, certified treatments</p>
+        </div>
+        <div class="about-feat">
+          <div class="af-icon">💎</div>
+          <h4 data-i18n="about_feat_2">Premium Products</h4>
+          <p data-i18n="about_feat_2_p">Only trusted brands used</p>
+        </div>
+        <div class="about-feat">
+          <div class="af-icon">🌹</div>
+          <h4 data-i18n="about_feat_3">Personalised Care</h4>
+          <p data-i18n="about_feat_3_p">Tailored to your skin type</p>
+        </div>
+        <div class="about-feat">
+          <div class="af-icon">🧼</div>
+          <h4 data-i18n="about_feat_4">Hygienic Studio</h4>
+          <p data-i18n="about_feat_4_p">Fully sanitized equipment</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+  <div class="reviews-header fade-up">
+    <span class="section-tag" data-i18n="reviews_tag">✦ Client Love</span>
+    <h2 class="section-title" data-i18n="reviews_title">What They <em>Say</em></h2>
+    <p class="section-sub" data-i18n="reviews_sub">Trusted by hundreds of clients across the region</p>
+    <button class="btn-primary" data-modal-open="reviewModal" style="margin-top:1.5rem;" data-i18n="reviews_btn">Share Your Experience ✦</button>
+  </div>
+
+  <div class="testimonials-grid" id="testimonialsContainer">
+    <div class="loading" style="grid-column:1/-1;">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section class="book-section" id="book">
+  <div class="book-inner">
+    <div class="fade-up">
+      <span class="section-tag" data-i18n="book_tag">✦ Appointments</span>
+      <h2 class="section-title" data-i18n="book_title">Book Your <em>Session</em></h2>
+      <p class="section-sub" data-i18n="book_sub">Reserve your spot in just a few clicks. We'll confirm via phone.</p>
+
+      <div class="book-info-box" style="margin-top:1.5rem;">
+        <h4>Contact Directly</h4>
+        <div class="book-info-row"><span class="icon">📞</span> 6355781262</div>
+        <div class="book-info-row"><span class="icon">📷</span> @v.i.s.h.v.a__b.e.a.u.t.y</div>
+        <div class="book-info-row"><span class="icon">📍</span> Juni Vasni, Gujarat</div>
+        <div class="book-info-row"><span class="icon">🕐</span> Mon–Sat: 10 AM – 7 PM</div>
+      </div>
+    </div>
+
+    <div class="form-card fade-up">
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--brown-dark);margin-bottom:1.5rem;" data-i18n="book_form_title">Appointment Request</h3>
+      <form id="bookingForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label data-i18n="book_form_name">Full Name *</label>
+            <input type="text" name="name" placeholder="Your full name" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="book_form_phone">Phone *</label>
+            <input type="tel" name="phone" placeholder="Your phone" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="book_form_email">Email</label>
+          <input type="email" name="email" placeholder="your@email.com" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="book_form_service">Service *</label>
+          <select name="service" required>
+            <option value="">Select a service</option>
+            <option>Eyebrow Shaping</option>
+            <option>Wax &amp; Smooth</option>
+            <option>Clean-Up &amp; Facial</option>
+            <option>Hair Spa</option>
+            <option>Hair Cut &amp; Colour</option>
+            <option>Hair Style &amp; Makeup</option>
+            <option>Bridal Package</option>
+            <option>Custom Package</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label data-i18n="book_form_date">Date *</label>
+            <input type="date" name="date" id="bookDate" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="book_form_time">Time *</label>
+            <select name="time" required>
+              <option value="">Select time</option>
+              <option>10:00 AM</option><option>11:00 AM</option>
+              <option>12:00 PM</option><option>01:00 PM</option>
+              <option>02:00 PM</option><option>03:00 PM</option>
+              <option>04:00 PM</option><option>05:00 PM</option>
+              <option>06:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="book_form_msg">Message</label>
+          <textarea name="message" placeholder="Any special requests..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary btn-full" data-i18n="book_form_btn">Book Appointment</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM CTA -->
+<section class="insta-section">
+  <span class="section-tag">✦ Follow Our Journey</span>
+  <h2 class="section-title">Follow on <em>Instagram</em></h2>
+  <p class="section-sub" style="margin:0 auto 0.5rem;">See our latest transformations and beauty tips</p>
+  <a href="https://www.instagram.com/v.i.s.h.v.a__b.e.a.u.t.y/" target="_blank" class="insta-handle">
+    📷 @v.i.s.h.v.a__b.e.a.u.t.y
+  </a>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="contact-inner">
+    <div class="fade-up">
+      <span class="section-tag" data-i18n="contact_tag">✦ Get In Touch</span>
+      <h2 class="section-title" data-i18n="contact_title">Contact <em>Us</em></h2>
+      <p class="section-sub" data-i18n="contact_sub">Have a question? Drop us a message or reach out directly.</p>
+
+      <div class="contact-info">
+        <a href="https://wa.me/916355781262" target="_blank" class="contact-item contact-item-link">
+          <div class="contact-icon">💬</div>
+          <div><h4>WhatsApp</h4><p>+91 63557 81262</p></div>
+        </a>
+        <a href="https://www.instagram.com/v.i.s.h.v.a__b.e.a.u.t.y/" target="_blank" class="contact-item contact-item-link">
+          <div class="contact-icon">📷</div>
+          <div><h4>Instagram</h4><p>@v.i.s.h.v.a__b.e.a.u.t.y</p></div>
+        </a>
+        <a href="https://maps.google.com/?q=Juni+Vasni+Gujarat+India" target="_blank" class="contact-item contact-item-link">
+          <div class="contact-icon">📍</div>
+          <div><h4>Location</h4><p>Juni Vasni, Gujarat, India</p></div>
+        </a>
+        <a href="tel:6355781262" class="contact-item contact-item-link">
+          <div class="contact-icon">📞</div>
+          <div><h4>Call</h4><p>6355781262</p></div>
+        </a>
+      </div>
+
+      <div class="social-row">
+        <a href="https://wa.me/916355781262" target="_blank" class="social-btn" title="WhatsApp">💬</a>
+        <a href="https://www.instagram.com/v.i.s.h.v.a__b.e.a.u.t.y/" target="_blank" class="social-btn" title="Instagram">📷</a>
+        <a href="tel:6355781262" class="social-btn" title="Call">📞</a>
+      </div>
+    </div>
+
+    <div class="form-card fade-up">
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--brown-dark);margin-bottom:1.5rem;" data-i18n="contact_form_title">Send a Message</h3>
+      <form id="contactForm">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" name="name" placeholder="Your name" required />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" name="phone" placeholder="Your phone number" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="your@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Message *</label>
+          <textarea name="message" placeholder="How can we help you?" style="height:120px;" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary btn-full" data-i18n="contact_form_btn">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">Viishhva <span>Patel</span></div>
+      <p class="footer-desc">Expert beauty treatments with medical precision. Your transformation is our art.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#services">Eyebrow Shaping</a></li>
+        <li><a href="#services">Wax &amp; Smooth</a></li>
+        <li><a href="#services">Facial &amp; Clean-Up</a></li>
+        <li><a href="#services">Hair Spa &amp; Cut</a></li>
+        <li><a href="#services">Bridal Packages</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="/gallery">Gallery</a></li>
+        <li><a href="#book">Book Now</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="https://wa.me/916355781262" target="_blank">WhatsApp</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Viishhva Patel Beauty Studio</span>
+    <span>Made with 🌸 in Juni Vasni</span>
+  </div>
+</footer>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <button class="modal-close" data-modal-close>×</button>
+    <h2>Your Review</h2>
+    <p>Share your experience at Viishhva Beauty Studio</p>
+    <form id="reviewForm">
+      <div class="form-group"><label>Name *</label><input type="text" name="name" placeholder="Your name" required /></div>
+      <div class="form-group">
+        <label>Service</label>
+        <select name="service">
+          <option value="">Select service</option>
+          <option>Eyebrow Shaping</option><option>Wax &amp; Smooth</option>
+          <option>Clean-Up &amp; Facial</option><option>Hair Spa &amp; Cut</option>
+          <option>Hair Style &amp; Makeup</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Rating</label>
+        <div class="stars-input">
+          <button type="button" class="star-btn active" data-val="1">★</button>
+          <button type="button" class="star-btn active" data-val="2">★</button>
+          <button type="button" class="star-btn active" data-val="3">★</button>
+          <button type="button" class="star-btn active" data-val="4">★</button>
+          <button type="button" class="star-btn active" data-val="5">★</button>
+          <input type="hidden" name="rating" id="ratingInput" value="5" />
+        </div>
+      </div>
+      <div class="form-group"><label>Review *</label><textarea name="review" placeholder="Tell us about your experience..." required></textarea></div>
+      <button type="submit" class="btn-primary btn-full">Submit Review</button>
+    </form>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal" style="text-align:center;">
+    <button class="modal-close" data-modal-close>×</button>
+    <div style="font-size:3.5rem;margin-bottom:1rem;">🌸</div>
+    <h2>Booking Received!</h2>
+    <p style="margin-bottom:1.5rem;">Thank you! We'll call you shortly to confirm your appointment.</p>
+    <a href="tel:6355781262" class="btn-primary">Call Us: 6355781262</a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- WhatsApp Float -->
+<a href="https://wa.me/916355781262" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+  💬
+  <div class="wa-pulse"></div>
+</a>
+
+<script src="main.js"></script>
+</body>
+</html>

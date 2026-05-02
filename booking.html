@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Appointment – Viishhva Patel Beauty Studio</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <nav>
+        <a href="/" class="nav-logo">Viishhva <span>Patel</span></a>
+        <ul class="nav-links">
+            <li><a href="/#services">Services</a></li>
+            <li><a href="/gallery">Gallery</a></li>
+            <li><a href="/#about">About</a></li>
+            <li><a href="/#contact">Contact</a></li>
+        </ul>
+        <a href="/" class="nav-cta">Home</a>
+        <button class="lang-toggle" id="langToggle">GUJ</button>
+        <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </nav>
+
+    <div class="booking-page">
+        <div class="booking-page-inner">
+            <div class="fade-up">
+                <span class="section-tag" id="bookTag">✦ Reservation</span>
+                <h1 class="section-title" id="bookTitle">Book <em>Appointment</em></h1>
+                <p class="section-sub" id="bookSub">Secure your session today. We'll confirm via phone call shortly.</p>
+
+                <div class="service-list" style="margin-top:2rem;">
+                    <div class="service-list-item"><span class="check">✦</span> Eyebrow Shaping</div>
+                    <div class="service-list-item"><span class="check">✦</span> Wax &amp; Smooth</div>
+                    <div class="service-list-item"><span class="check">✦</span> Clean-Up &amp; Facial</div>
+                    <div class="service-list-item"><span class="check">✦</span> Hair Spa &amp; Cut</div>
+                    <div class="service-list-item"><span class="check">✦</span> Hair Style &amp; Makeup</div>
+                </div>
+
+                <div class="book-info-box" style="margin-top:1.5rem;">
+                    <h4>Contact Directly</h4>
+                    <div class="book-info-row"><span class="icon">📞</span> 6355781262</div>
+                    <div class="book-info-row"><span class="icon">📷</span> @v.i.s.h.v.a__b.e.a.u.t.y</div>
+                    <div class="book-info-row"><span class="icon">📍</span> Juni Vasni, Gujarat</div>
+                    <div class="book-info-row"><span class="icon">🕐</span> Mon–Sat: 10 AM – 7 PM</div>
+                </div>
+            </div>
+
+            <div class="form-card fade-up">
+                <h3
+                    style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--brown-dark);margin-bottom:1.5rem;">
+                    Appointment Request</h3>
+                <form id="bookingForm">
+                    <div class="form-row">
+                        <div class="form-group"><label>Full Name *</label><input type="text" name="name"
+                                placeholder="Your full name" required /></div>
+                        <div class="form-group"><label>Phone *</label><input type="tel" name="phone"
+                                placeholder="Your phone" required /></div>
+                    </div>
+                    <div class="form-group"><label>Email</label><input type="email" name="email"
+                            placeholder="your@email.com" /></div>
+                    <div class="form-group">
+                        <label>Service *</label>
+                        <select name="service" required>
+                            <option value="">Select a service</option>
+                            <option>Eyebrow Shaping</option>
+                            <option>Wax &amp; Smooth</option>
+                            <option>Clean-Up &amp; Facial</option>
+                            <option>Hair Spa</option>
+                            <option>Hair Cut &amp; Colour</option>
+                            <option>Hair Style &amp; Makeup</option>
+                            <option>Bridal Package</option>
+                            <option>Custom Package</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Date *</label><input type="date" name="date" id="bookDate"
+                                required /></div>
+                        <div class="form-group">
+                            <label>Time *</label>
+                            <select name="time" required>
+                                <option value="">Select time</option>
+                                <option>10:00 AM</option>
+                                <option>11:00 AM</option>
+                                <option>12:00 PM</option>
+                                <option>01:00 PM</option>
+                                <option>02:00 PM</option>
+                                <option>03:00 PM</option>
+                                <option>04:00 PM</option>
+                                <option>05:00 PM</option>
+                                <option>06:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Message</label><textarea name="message"
+                            placeholder="Any special requests..."></textarea></div>
+                    <button type="submit" class="btn-primary btn-full">Book Appointment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="successModal">
+        <div class="modal" style="text-align:center;">
+            <button class="modal-close" id="modalClose">×</button>
+            <div style="font-size:3rem;margin-bottom:1rem;">🌸</div>
+            <h2>Booking Received!</h2>
+            <p style="margin-bottom:1.5rem;">We'll call you shortly to confirm your appointment.</p>
+            <a href="/" class="btn-primary">Go Home</a>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <a href="https://wa.me/916355781262" target="_blank" class="whatsapp-float">💬<div class="wa-pulse"></div></a>
+
+    <script>
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60), { passive: true });
+        document.getElementById('hamburger')?.addEventListener('click', () => nav.classList.toggle('menu-open'));
+        document.getElementById('bookDate').min = new Date().toISOString().split('T')[0];
+        document.getElementById('modalClose')?.addEventListener('click', () => document.getElementById('successModal').classList.remove('active'));
+
+        // Fade observer
+        document.querySelectorAll('.fade-up').forEach(el => {
+            new IntersectionObserver(([e]) => { if (e.isIntersecting) e.target.classList.add('visible'); }, { threshold: 0.1 }).observe(el);
+        });
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = 'toast' + (isError ? ' error' : '');
+            t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 4000);
+        }
+
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const orig = btn.innerHTML;
+            btn.disabled = true; btn.textContent = 'Booking...';
+            const data = Object.fromEntries(new FormData(e.target));
+            try {
+                const res = await fetch('/api/bookings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                const r = await res.json();
+                if (r.success) {
+                    showToast('✨ Booking confirmed! We\'ll call you shortly.');
+                    e.target.reset();
+                    document.getElementById('successModal').classList.add('active');
+                } else {
+                    showToast(r.error || 'Booking failed. Try again.', true);
+                }
+            } catch { showToast('Network error. Try again.', true); }
+            finally { btn.disabled = false; btn.innerHTML = orig; }
+        });
+
+        // Lang
+        let currentLang = localStorage.getItem('viishhva_lang') || 'en';
+        const t = {
+            en: { tag: '✦ Reservation', title: 'Book <em>Appointment</em>', sub: "Secure your session today. We'll confirm via phone call shortly." },
+            gu: { tag: '✦ રિઝર્વેશન', title: 'અપોઈન્ટમેન્ટ <em>બુક</em>', sub: 'આજે જ સ્લોટ સિક્યોર કરો. અમે ટૂંક સમયમાં ફોન કરીશું.' }
+        };
+        function updateLang() {
+            document.getElementById('bookTag').textContent = t[currentLang].tag;
+            document.getElementById('bookTitle').innerHTML = t[currentLang].title;
+            document.getElementById('bookSub').textContent = t[currentLang].sub;
+            document.getElementById('langToggle').textContent = currentLang === 'en' ? 'GUJ' : 'ENG';
+        }
+        document.getElementById('langToggle')?.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'gu' : 'en';
+            localStorage.setItem('viishhva_lang', currentLang);
+            updateLang();
+        });
+        updateLang();
+    </script>
+</body>
+
+</html>

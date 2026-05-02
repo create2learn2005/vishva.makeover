@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery – Viishhva Patel Beauty Studio</title>
+    <meta name="description"
+        content="Explore real makeovers and beauty transformations by Viishhva Patel Beauty Studio." />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="nav-logo">Viishhva <span>Patel</span></a>
+        <ul class="nav-links">
+            <li><a href="/#services">Services</a></li>
+            <li><a href="/gallery" class="active">Gallery</a></li>
+            <li><a href="/#about">About</a></li>
+            <li><a href="/#reviews">Reviews</a></li>
+            <li><a href="/#contact">Contact</a></li>
+        </ul>
+        <a href="/#book" class="nav-cta">Book Now</a>
+        <button class="lang-toggle" id="langToggle">GUJ</button>
+        <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </nav>
+
+    <div class="gallery-hero">
+        <span class="section-tag">✦ Our Work</span>
+        <h1 class="section-title">Makeover <em>Gallery</em></h1>
+        <p class="section-sub">Real transformations, real confidence. Every look crafted with care.</p>
+    </div>
+
+    <div class="filter-bar">
+        <button class="filter-btn active" data-cat="all">All</button>
+        <button class="filter-btn" data-cat="facial">Facial &amp; Skincare</button>
+        <button class="filter-btn" data-cat="hair">Hair</button>
+        <button class="filter-btn" data-cat="makeup">Makeup</button>
+        <button class="filter-btn" data-cat="general">General</button>
+    </div>
+
+    <div class="masonry-grid" id="galleryGrid">
+        <div class="loading" style="column-span:all;width:100%;display:flex;justify-content:center;padding:4rem;">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">×</button>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+        <div class="lightbox-info" id="lightboxInfo"></div>
+    </div>
+
+    <footer>
+        <div class="footer-top">
+            <div>
+                <div class="footer-logo">Viishhva <span>Patel</span></div>
+                <p class="footer-desc">Beauty Studio · Juni Vasni, Gujarat</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#book">Book Now</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="https://wa.me/916355781262">WhatsApp</a></li>
+                    <li><a href="https://www.instagram.com/v.i.s.h.v.a__b.e.a.u.t.y/" target="_blank">Instagram</a></li>
+                    <li><a href="tel:6355781262">Call: 6355781262</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 Viishhva Patel Beauty Studio</span>
+            <span>Made with 🌸</span>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <a href="https://wa.me/916355781262" target="_blank" class="whatsapp-float">💬<div class="wa-pulse"></div></a>
+
+    <script>
+        let allPhotos = [];
+
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60), { passive: true });
+        document.getElementById('hamburger')?.addEventListener('click', () => nav.classList.toggle('menu-open'));
+
+        function escHtml(s) {
+            if (!s) return '';
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        async function loadGallery() {
+            const grid = document.getElementById('galleryGrid');
+            try {
+                const res = await fetch('/api/gallery');
+                allPhotos = await res.json();
+                renderGallery(allPhotos);
+            } catch {
+                grid.innerHTML = `<div class="empty-state" style="column-span:all;">
+      <div class="empty-icon">📷</div>
+      <h3>Unable to load gallery</h3>
+      <p>Please try again later.</p>
+    </div>`;
+            }
+        }
+
+        function renderGallery(photos) {
+            const grid = document.getElementById('galleryGrid');
+            if (!photos.length) {
+                grid.innerHTML = `<div class="empty-state" style="column-span:all;">
+      <div class="empty-icon">🌸</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--brown-dark);">Gallery Coming Soon</h3>
+      <p>Our portfolio is being curated. Check back soon!</p>
+    </div>`;
+                return;
+            }
+
+            grid.innerHTML = photos.map(p => `
+    <div class="masonry-item fade-up" onclick="openLightbox(${p.id},'${escHtml(p.title)}','${escHtml(p.category)}')">
+      <img src="/api/gallery/${p.id}/image" alt="${escHtml(p.title)}" loading="lazy" />
+      <div class="overlay">
+        <div class="overlay-cat">${escHtml(p.category)}</div>
+        <div class="overlay-title">${escHtml(p.title)}</div>
+      </div>
+    </div>
+  `).join('');
+
+            // Observe
+            document.querySelectorAll('.masonry-item.fade-up').forEach(el => {
+                new IntersectionObserver(([e]) => { if (e.isIntersecting) e.target.classList.add('visible'); }, { threshold: 0.05 }).observe(el);
+            });
+        }
+
+        function openLightbox(id, title, cat) {
+            document.getElementById('lightboxImg').src = `/api/gallery/${id}/image`;
+            document.getElementById('lightboxInfo').innerHTML = `<strong>${escHtml(title)}</strong> · <span style="color:var(--gold-light)">${escHtml(cat)}</span>`;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('lightboxClose').onclick = closeLightbox;
+        document.getElementById('lightbox').addEventListener('click', (e) => { if (e.target.id === 'lightbox') closeLightbox(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const cat = btn.dataset.cat;
+                const filtered = cat === 'all' ? allPhotos : allPhotos.filter(p => p.category === cat);
+                renderGallery(filtered);
+            });
+        });
+
+        // Lang toggle
+        let currentLang = localStorage.getItem('viishhva_lang') || 'en';
+        function updateLang() {
+            document.getElementById('langToggle').textContent = currentLang === 'en' ? 'GUJ' : 'ENG';
+        }
+        document.getElementById('langToggle')?.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'gu' : 'en';
+            localStorage.setItem('viishhva_lang', currentLang);
+            updateLang();
+        });
+        updateLang();
+
+        loadGallery();
+    </script>
+</body>
+
+</html>
