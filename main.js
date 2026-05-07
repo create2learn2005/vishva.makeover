@@ -1,6 +1,24 @@
 // ══════════════════════════════════════════════════
-//  VIISHHVA PATEL BEAUTY STUDIO — Main JS
+//  MAKEOVER BY VISHVA — Main JS
 // ══════════════════════════════════════════════════
+
+// ── API BASE URL (auto-detect) ────────────────────
+const API_BASE = window.location.origin;
+
+// ── FETCH WITH RETRY ─────────────────────────────
+async function fetchWithRetry(url, options = {}, retries = 2) {
+  const fullUrl = url.startsWith('http') ? url : API_BASE + url;
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(fullUrl, options);
+      if (!res.ok && i < retries) continue;
+      return res;
+    } catch (err) {
+      if (i === retries) throw err;
+      await new Promise(r => setTimeout(r, 500 * (i + 1)));
+    }
+  }
+}
 
 // ── TRANSLATIONS ────────────────────────────────
 const translations = {
@@ -86,6 +104,15 @@ function updateLanguage() {
   const toggle = document.getElementById('langToggle');
   if (toggle) toggle.textContent = currentLang === 'en' ? 'GUJ' : 'ENG';
   document.documentElement.lang = currentLang;
+
+  // Apply/remove Gujarati font to entire document
+  if (currentLang === 'gu') {
+    document.body.style.fontFamily = "'Noto Sans Gujarati', 'Jost', sans-serif";
+    document.documentElement.setAttribute('lang', 'gu');
+  } else {
+    document.body.style.fontFamily = "'Jost', sans-serif";
+    document.documentElement.setAttribute('lang', 'en');
+  }
 }
 
 // ── NAVBAR ──────────────────────────────────────
@@ -167,7 +194,7 @@ if (bookingForm) {
 
     const data = Object.fromEntries(new FormData(bookingForm));
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetchWithRetry('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -201,7 +228,7 @@ if (contactForm) {
 
     const data = Object.fromEntries(new FormData(contactForm));
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetchWithRetry('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -234,7 +261,7 @@ if (reviewForm) {
 
     const data = Object.fromEntries(new FormData(reviewForm));
     try {
-      const res = await fetch('/api/testimonials', {
+      const res = await fetchWithRetry('/api/testimonials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -263,7 +290,7 @@ async function loadTestimonials() {
   if (!container) return;
 
   try {
-    const res = await fetch('/api/testimonials');
+    const res = await fetchWithRetry('/api/testimonials');
     const data = await res.json();
 
     if (!data.length) {
@@ -301,7 +328,7 @@ async function loadGalleryPreview() {
   if (!container) return;
 
   try {
-    const res = await fetch('/api/gallery');
+    const res = await fetchWithRetry('/api/gallery');
     const photos = await res.json();
 
     if (!photos.length) {

@@ -1,14 +1,14 @@
 {
-  "name": "viishhva-beauty",
-  "version": "2.0.0",
-  "description": "Viishhva Patel Beauty Studio – Full-stack web app with PostgreSQL",
+  "name": "makeover-by-vishva",
+  "version": "3.0.0",
+  "description": "Makeover By Vishva – Full-stack Beauty Studio Web App (Express + PostgreSQL)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["beauty", "salon", "booking", "gujarat"],
-  "author": "Viishhva Patel",
+  "keywords": ["beauty", "salon", "booking", "gujarat", "makeover", "vishva"],
+  "author": "Makeover By Vishva",
   "license": "ISC",
   "engines": {
     "node": ">=16.0.0"

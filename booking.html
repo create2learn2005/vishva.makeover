@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Book Appointment – Viishhva Patel Beauty Studio</title>
+  <meta name="description" content="Book your beauty appointment at Makeover By Vishva. Eyebrow shaping, facial, hair spa, makeup & more in Juni Vasni, Gujarat." />
+  <title>Book Appointment – Makeover By Vishva</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <nav>
-  <a href="/" class="nav-logo">Viishhva <span>Patel</span></a>
+  <a href="/" class="nav-logo">Makeover <span>By Vishva</span></a>
   <ul class="nav-links">
     <li><a href="/#services">Services</a></li>
     <li><a href="/gallery">Gallery</a></li>
@@ -137,16 +138,23 @@ document.getElementById('bookingForm').addEventListener('submit', async (e) => {
 let currentLang = localStorage.getItem('viishhva_lang') || 'en';
 const t = {
   en: { tag:'✦ Reservation', title:'Book <em>Appointment</em>', sub:"Secure your session today. We'll confirm via phone call shortly." },
-  gu: { tag:'✦ રિઝર્વેશન', title:'અપોઈન્ટમેન્ટ <em>બુક</em>', sub:'આજે જ સ્લોટ સિક્યોર કરો. અમે ટૂંક સમયમાં ફોન કરીશું.' }
+  gu: { tag:'✦ રિઝર્વેશન', title:'અપોઇન્ટમેન્ટ <em>બુક</em>', sub:'આજે જ સ્લોટ સિક્યોર કરો. અમે ટૂંક સમયમાં ફોન કરીશું.' }
 };
 function updateLang() {
   document.getElementById('bookTag').textContent = t[currentLang].tag;
   document.getElementById('bookTitle').innerHTML = t[currentLang].title;
   document.getElementById('bookSub').textContent = t[currentLang].sub;
-  document.getElementById('langToggle').textContent = currentLang==='en' ? 'GUJ' : 'ENG';
+  document.getElementById('langToggle').textContent = currentLang === 'en' ? 'GUJ' : 'ENG';
+  if (currentLang === 'gu') {
+    document.body.style.fontFamily = "'Noto Sans Gujarati', 'Jost', sans-serif";
+    document.documentElement.setAttribute('lang', 'gu');
+  } else {
+    document.body.style.fontFamily = "'Jost', sans-serif";
+    document.documentElement.setAttribute('lang', 'en');
+  }
 }
 document.getElementById('langToggle')?.addEventListener('click', () => {
-  currentLang = currentLang==='en'?'gu':'en';
+  currentLang = currentLang === 'en' ? 'gu' : 'en';
   localStorage.setItem('viishhva_lang', currentLang);
   updateLang();
 });

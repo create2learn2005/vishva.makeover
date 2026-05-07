@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gallery – Viishhva Patel Beauty Studio</title>
-  <meta name="description" content="Explore real makeovers and beauty transformations by Viishhva Patel Beauty Studio." />
+  <title>Gallery – Makeover By Vishva</title>
+  <meta name="description" content="Explore real makeovers and beauty transformations by Makeover By Vishva – Juni Vasni, Gujarat." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <nav>
-  <a href="/" class="nav-logo">Viishhva <span>Patel</span></a>
+  <a href="/" class="nav-logo">Makeover <span>By Vishva</span></a>
   <ul class="nav-links">
     <li><a href="/#services">Services</a></li>
     <li><a href="/gallery" class="active">Gallery</a></li>
@@ -52,7 +52,7 @@
 <footer>
   <div class="footer-top">
     <div>
-      <div class="footer-logo">Viishhva <span>Patel</span></div>
+      <div class="footer-logo">Makeover <span>By Vishva</span></div>
       <p class="footer-desc">Beauty Studio · Juni Vasni, Gujarat</p>
     </div>
     <div class="footer-col">
@@ -73,7 +73,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2025 Viishhva Patel Beauty Studio</span>
+    <span>© 2026 Makeover By Vishva</span>
     <span>Made with 🌸</span>
   </div>
 </footer>
@@ -165,7 +165,15 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 // Lang toggle
 let currentLang = localStorage.getItem('viishhva_lang') || 'en';
 function updateLang() {
-  document.getElementById('langToggle').textContent = currentLang === 'en' ? 'GUJ' : 'ENG';
+  const toggle = document.getElementById('langToggle');
+  if (toggle) toggle.textContent = currentLang === 'en' ? 'GUJ' : 'ENG';
+  if (currentLang === 'gu') {
+    document.body.style.fontFamily = "'Noto Sans Gujarati', 'Jost', sans-serif";
+    document.documentElement.setAttribute('lang', 'gu');
+  } else {
+    document.body.style.fontFamily = "'Jost', sans-serif";
+    document.documentElement.setAttribute('lang', 'en');
+  }
 }
 document.getElementById('langToggle')?.addEventListener('click', () => {
   currentLang = currentLang === 'en' ? 'gu' : 'en';
